@@ -1,11 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
     <div class="flex min-h-screen bg-gray-50">
-        @include('pages.admin.sidebar')
 
         <div class="flex-1 p-6">
-            @include('pages.admin.header')
 
             <div class="bg-[#B7E4FF] rounded-2xl shadow-md p-6 mt-6">
                 <div class="bg-[#ffffff] rounded-2xl shadow-md p-8 mt-6">
@@ -68,7 +66,7 @@
                         <div class="flex justify-center gap-4 mt-6">
                             <button type="submit"
                                 class="bg-pink-400 text-white px-6 py-2 rounded-md hover:bg-pink-500">Simpan</button>
-                            <a href="#"
+                            <a href="{{ route('admin.products.index') }}"
                                 class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300">Batal</a>
                         </div>
                     </form>

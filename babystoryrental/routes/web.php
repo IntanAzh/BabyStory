@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Admin\StatisticController;
+use App\Http\Controllers\NotificationController;
 
 // Halaman utama
 Route::get('/', function () {
@@ -37,5 +39,15 @@ Route::prefix('admin')->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    });
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/statistics', [StatisticController::class, 'index'])->name('statistics.index');
+        Route::get('/admin/statistics', [StatisticController::class, 'index'])->name('admin.statistics.index');
+
+        Route::middleware(['auth'])->group(function () {
+            Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+            Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        });
     });
 });

@@ -1,13 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
     <div class="flex min-h-screen bg-gray-50">
-        <!-- Sidebar -->
-        @include('pages.admin.sidebar')
 
         <!-- Konten utama -->
         <div class="flex-1 p-6">
-            @include('pages.admin.header')
 
             <!-- Container -->
             <div class="bg-[#B7E4FF] rounded-2xl shadow-md p-8 mt-6">

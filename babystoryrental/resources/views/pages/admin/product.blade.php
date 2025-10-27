@@ -1,11 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
     <div class="flex min-h-screen bg-gray-50">
-        @include('pages.admin.sidebar')
-
         <div class="flex-1 p-6">
-            @include('pages.admin.header')
 
             <div class="bg-[#B7E4FF] rounded-2xl shadow-md p-6 mt-6">
                 <div class="flex justify-between items-center mb-6">
