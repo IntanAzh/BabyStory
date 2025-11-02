@@ -7,17 +7,28 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
-    // Tampilkan semua produk
-    public function index()
+    // Tampilkan semua produk, dengan search
+    public function index(Request $request)
     {
-        $products = Product::paginate(10);
-        return view('pages.admin.product', compact('products'));
+        $query = Product::query();
+
+        // Jika ada query search
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('nama_produk', 'like', "%{$search}%")
+                ->orWhere('kategori', 'like', "%{$search}%")
+                ->orWhere('brand', 'like', "%{$search}%");
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+
+        return view('pages.admin.products.product', compact('products'));
     }
 
     // Tampilkan form tambah produk
     public function create()
     {
-        return view('pages.admin.product-create');
+        return view('pages.admin.products.product-create');
     }
 
     // Simpan produk baru
@@ -51,11 +62,18 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
-    // Edit produk
+    // Tampilkan detail produk
+    public function show($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('pages.admin.products.detail', compact('product'));
+    }
+
+    // Tampilkan form edit produk
     public function edit($id)
     {
         $product = Product::findOrFail($id);
-        return view('pages.admin.product-edit', compact('product'));
+        return view('pages.admin.products.product-edit', compact('product'));
     }
 
     // Update produk
@@ -66,7 +84,7 @@ class ProductController extends Controller
         $request->validate([
             'nama_produk' => 'required|string|max:255',
             'kategori' => 'required|string|max:255',
-            'harga' => 'required|numeric',
+            'harga_rental' => 'required|numeric',
             'stok' => 'required|integer',
             'deskripsi' => 'nullable|string',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -80,13 +98,13 @@ class ProductController extends Controller
         $product->update([
             'nama_produk' => $request->nama_produk,
             'kategori' => $request->kategori,
-            'harga' => $request->harga,
+            'harga_rental' => $request->harga_rental,
             'stok' => $request->stok,
             'deskripsi' => $request->deskripsi,
             'gambar' => $gambarPath,
         ]);
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     // Hapus produk
@@ -94,6 +112,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $product->delete();
-        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
+
+        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 }

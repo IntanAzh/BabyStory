@@ -14,7 +14,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return view('pages.admin.category', compact('categories'));
+        return view('pages.admin.category.category', compact('categories'));
     }
 
     /**
@@ -22,7 +22,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('pages.admin.category-create');
+        return view('pages.admin.category.category-create');
     }
 
     /**
@@ -50,6 +50,34 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori berhasil ditambahkan!');
     }
+
+    public function edit($id)
+    {
+        $category = Category::findOrFail($id);
+        return view('pages.admin.category.edit', compact('category'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $category = Category::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $category->name = $validated['name'];
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('categories', 'public');
+            $category->image = $path;
+        }
+
+        $category->save();
+
+        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui!');
+    }
+
 
     /**
      * (Opsional) Hapus kategori.

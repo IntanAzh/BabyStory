@@ -59,6 +59,7 @@
                                     <p class="text-sm text-gray-500 mb-2">Drop your image here, jpeg and png are allowed</p>
                                     <input type="file" name="gambar" class="block w-full text-sm text-gray-700">
                                 </div>
+
                             </div>
                         </div>
 

@@ -11,19 +11,19 @@ class AdminOrderController extends Controller
     public function index()
     {
         $orders = Order::orderBy('order_date', 'desc')->paginate(10);
-        return view('pages.admin.orders', compact('orders'));
+        return view('pages.admin.order.orders', compact('orders'));
     }
 
     // Form tambah pesanan
     public function create()
     {
-        return view('pages.admin.createorders');
+        return view('pages.admin.order.create-orders');
     }
 
     // Simpan pesanan baru
     public function store(Request $request)
     {
-        $request->validate([
+       $validated = $request->validate([    
             'order_code' => 'required|unique:orders',
             'customer_name' => 'required',
             'alamat' => 'required',
@@ -35,18 +35,23 @@ class AdminOrderController extends Controller
             'total' => 'required|numeric',
             'no_hp' => 'required|digits_between:12,13|numeric',
         ]);
+        // Upload KTP jika ada
+        if ($request->hasFile('ktp')) {
+            $validated['ktp'] = $request->file('ktp')->store('ktp', 'public');
+        }
 
         $subtotal = 0; // nanti bisa otomatis dari harga produk kalau sudah ada relasi
         $total = $subtotal + $request->biaya_pengiriman;
 
         Order::create([
-            'nama_pelanggan' => $request->nama_pelanggan,
-            'no_hp' => $request->no_hp,
-            'alamat' => $request->alamat,
-            'nama_produk' => $request->nama_produk,
-            'lama_sewa' => $request->lama_sewa,
-            'biaya_pengiriman' => $request->biaya_pengiriman,
-            'status' => $request->status,
+            'order_code' => $validated['order_code'],
+            'nama_pelanggan' => $validated['nama_pelanggan'],
+            'no_hp' => $validated['no_hp'],
+            'alamat' => $validated['alamat'],
+            'nama_produk' => $validated['nama_produk'],
+            'lama_sewa' => $validated['lama_sewa'],
+            'biaya_pengiriman' => $validated['biaya_pengiriman'],
+            'status' => $validated['status'],
             'subtotal' => $subtotal,
             'total' => $total,
         ]);

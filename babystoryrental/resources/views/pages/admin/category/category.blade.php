@@ -3,7 +3,6 @@
 @section('content')
     <div class="flex min-h-screen bg-gray-50">
 
-
         <!-- Konten utama -->
         <div class="flex-1 p-6">
 
@@ -22,7 +21,9 @@
                 <!-- Grid Kategori -->
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
                     @forelse ($categories as $category)
-                        <div class="flex items-center bg-white rounded-xl shadow p-4">
+                        <!-- Card Kategori -->
+                        <a href="{{ route('admin.categories.edit', $category->id) }}"
+                            class="flex items-center bg-white rounded-xl shadow p-4 hover:shadow-lg transition duration-200">
                             <div class="w-20 h-20 bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
                                 @if ($category->image)
                                     <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}"
@@ -35,7 +36,7 @@
                                 <h3 class="font-semibold text-gray-700">{{ $category->name }}</h3>
                                 <p class="text-gray-500 text-sm">Jumlah Produk: {{ $category->product_count ?? 0 }}</p>
                             </div>
-                        </div>
+                        </a>
                     @empty
                         <p class="text-gray-600">Belum ada kategori.</p>
                     @endforelse

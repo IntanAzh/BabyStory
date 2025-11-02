@@ -45,10 +45,11 @@
                     <!-- Kanan -->
                     <div
                         class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                        <img src="{{ asset('images/ph_image-light.png') }}" alt="Upload Placeholder"
-                            class="w-16 h-16 mb-3 object-contain opacity-80">
+                        <!-- Preview image (starts with placeholder) -->
+                        <img id="imagePreview" src="{{ asset('images/ph_image-light.png') }}" alt="Preview"
+                            class="w-40 h-40 mb-3 object-contain opacity-90 rounded-md">
                         <p class="text-gray-500 mb-2">Drop your image here, JPEG and PNG are allowed</p>
-                        <input type="file" name="image" accept=".jpg,.jpeg,.png"
+                        <input id="imageInput" type="file" name="image" accept=".jpg,.jpeg,.png,image/*"
                             class="mt-2 text-sm text-gray-600 cursor-pointer">
                     </div>
 
@@ -64,4 +65,38 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('imageInput');
+            const preview = document.getElementById('imagePreview');
+            const placeholderUrl = "{{ asset('images/ph_image-light.png') }}";
+            if (!input || !preview) return;
+
+            input.addEventListener('change', function(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) {
+                    preview.src = placeholderUrl;
+                    return;
+                }
+                if (!file.type.match('image.*')) {
+                    // Not an image - reset to placeholder
+                    preview.src = placeholderUrl;
+                    return;
+                }
+
+                // Show selected image
+                const url = URL.createObjectURL(file);
+                preview.src = url;
+
+                // Optional: revoke object URL after image loads to free memory
+                preview.onload = function() {
+                    try {
+                        URL.revokeObjectURL(url);
+                    } catch (err) {
+                        /* ignore */ }
+                };
+            });
+        });
+    </script>
 @endsection

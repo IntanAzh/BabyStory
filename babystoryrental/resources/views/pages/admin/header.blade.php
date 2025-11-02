@@ -12,11 +12,14 @@
     {{-- Bagian Kanan --}}
     <div class="flex items-center gap-5">
         {{-- Search --}}
-        <div class="hidden sm:flex items-center relative">
-            <input type="text" placeholder="Search..."
+        <form action="{{ route('admin.products.index') }}" method="GET" class="hidden sm:flex items-center relative">
+            <input type="text" name="search" placeholder="Search..." value="{{ request('search') }}"
                 class="border rounded-full px-4 py-2 w-48 md:w-64 focus:ring-2 focus:ring-pink-300 outline-none transition-all duration-300">
-            <i class="fa fa-search absolute right-3 text-gray-400"></i>
-        </div>
+            <button type="submit" class="absolute right-3 text-gray-400">
+                <i class="fa fa-search"></i>
+            </button>
+        </form>
+
 
         {{-- Notifikasi --}}
         <div class="relative cursor-pointer" id="notificationBell">
@@ -64,20 +67,43 @@
         </script>
 
         {{-- Dropdown Admin --}}
-        <div class="relative group">
-            <button
+        <div class="relative" id="adminDropdownWrapper">
+            <button id="adminDropdownButton"
                 class="border rounded-full px-4 py-1 flex items-center bg-gray-50 hover:bg-gray-100 transition focus:outline-none">
                 <span>Admin</span>
                 <i class="fa fa-chevron-down ml-2 text-xs"></i>
             </button>
 
             {{-- Isi Dropdown --}}
-            <div
-                class="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg hidden group-hover:block z-50 border border-gray-100">
+            <div id="adminDropdown"
+                class="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg hidden z-50 border border-gray-100">
                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profil</a>
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Pengaturan</a>
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Keluar</a>
+                <a href="{{ route('admin.change-password.form') }}"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Ubah Password</a>
+                <form action="{{ route('admin.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Keluar</button>
+                </form>
             </div>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const button = document.getElementById('adminDropdownButton');
+                const dropdown = document.getElementById('adminDropdown');
+                const wrapper = document.getElementById('adminDropdownWrapper');
+
+                button.addEventListener('click', () => {
+                    dropdown.classList.toggle('hidden');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!wrapper.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            });
+        </script>
     </div>
 </header>

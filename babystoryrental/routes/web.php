@@ -14,40 +14,72 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Grup untuk rute admin
-Route::prefix('admin')->group(function () {
-    Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
-    Route::post('/login', [AdminController::class, 'login'])->name('admin.login.submit');
-    Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+// ===========================
+// Rute untuk ADMIN
+// ===========================
+Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::middleware('auth:admin')->name('admin.')->group(function () {
+    // --- AUTH ---
+    Route::get('/login', [AdminController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+    Route::get('/change-password', [AdminController::class, 'showChangePasswordForm'])->name('change-password.form');
+    Route::post('/change-password', [AdminController::class, 'changePassword'])->name('change-password.update');
+
+
+    // --- Hanya untuk admin yang sudah login ---
+    Route::middleware('auth:admin')->group(function () {
+
+        // DASHBOARD
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // Orders
-        Route::prefix('orders')->group(function () {
-            Route::get('/', [AdminOrderController::class, 'index'])->name('orders.index');
-            Route::get('/create', [AdminOrderController::class, 'create'])->name('orders.create');
-            Route::post('/', [AdminOrderController::class, 'store'])->name('orders.store');
+        // ===================
+        // ORDERS
+        // ===================
+        Route::prefix('orders')->name('orders.')->group(function () {
+            Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+            Route::get('/create', [AdminOrderController::class, 'create'])->name('create');
+            Route::post('/', [AdminOrderController::class, 'store'])->name('store');
         });
 
-        // Categories
-        Route::get('/kategori', [CategoryController::class, 'index'])->name('categories.index');
-        Route::post('/kategori', [CategoryController::class, 'store'])->name('categories.store');
-        Route::get('/kategori/create', [CategoryController::class, 'create'])->name('categories.create');
+        // ===================
+        // CATEGORIES
+        // ===================
+        Route::prefix('kategori')->name('categories.')->group(function () {
+            Route::get('/', [CategoryController::class, 'index'])->name('index');
+            Route::get('/create', [CategoryController::class, 'create'])->name('create');
+            Route::post('/', [CategoryController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [CategoryController::class, 'edit'])->name('edit');   // ✨ Tambahan
+            Route::put('/{id}', [CategoryController::class, 'update'])->name('update');    // ✨ Tambahan
+            Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('destroy'); // ✨ Opsional
+        });
 
-        //  Products
-        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    });
+        // ===================
+        // PRODUCTS
+        // ===================
 
-    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::prefix('products')->name('products.')->group(function () {
+            Route::get('/', [ProductController::class, 'index'])->name('index');          // → admin.products.index
+            Route::get('/create', [ProductController::class, 'create'])->name('create');  // → admin.products.create
+            Route::post('/', [ProductController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [ProductController::class, 'update'])->name('update');
+            Route::delete('/{id}', [ProductController::class, 'destroy'])->name('destroy');
+            Route::get('/{id}', [ProductController::class, 'show'])->name('show');
+            Route::get('/admin/products/search', [ProductController::class, 'search']);
+
+        });
+        // ===================
+        // STATISTICS
+        // ===================
         Route::get('/statistics', [StatisticController::class, 'index'])->name('statistics.index');
-        Route::get('/admin/statistics', [StatisticController::class, 'index'])->name('admin.statistics.index');
 
-        Route::middleware(['auth'])->group(function () {
-            Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-            Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+        // ===================
+        // NOTIFICATIONS
+        // ===================
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
         });
     });
 });
